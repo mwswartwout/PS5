@@ -403,7 +403,7 @@ void TrajBuilder::build_triangular_spin_traj(geometry_msgs::PoseStamped start_po
 
 //this function would be useful for planning a need for sudden braking
 //compute trajectory corresponding to applying max prudent decel to halt
-void TrajBuilder::build_braking_traj(geometry_msgs::PoseStamped start_pose,
+void TrajBuilder::build_braking_traj(nav_msgs::Odometry start_state,
         std::vector<nav_msgs::Odometry> &vec_of_states) {
         //Set up internal variables off the current state, and start_pose
     double x_start = start_state.pose.pose.position.x;
