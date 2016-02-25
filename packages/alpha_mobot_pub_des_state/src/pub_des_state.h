@@ -55,22 +55,31 @@ private:
     double speed_max_; 
     double omega_max_; 
     double path_move_tol_; 
+    bool hardware_estop;
+    bool lidar_alarm;
 
     // some objects to support service and publisher
     ros::ServiceServer estop_service_;
     ros::ServiceServer estop_clear_service_;
     ros::ServiceServer flush_path_queue_;
     ros::ServiceServer append_path_;
-    
+
+    ros::ServiceClient estop_client;
+    ros::ServiceClient estop_clear_client;
+
     ros::Publisher desired_state_publisher_;
     ros::Publisher des_psi_publisher_;
-    
+
+    ros::Subscriber motor_subscriber;
+
     //a trajectory-builder object; 
     TrajBuilder trajBuilder_; 
 
     // member methods:
     void initializePublishers();
     void initializeServices();
+    void initializeSubscribers();
+    void motorCallback(std_msgs::Bool msg);
     bool estopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
     bool clearEstopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
     bool flushPathQueueCB(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
