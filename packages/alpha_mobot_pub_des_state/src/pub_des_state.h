@@ -47,7 +47,7 @@ private:
     bool e_stop_trigger_; //these are intended to enable e-stop via a service
     bool e_stop_reset_;
     int traj_pt_i_;
-    int npts_traj_;
+    long npts_traj_;
     double dt_;
     //dynamic parameters: should be tuned for target system
     double accel_max_; 

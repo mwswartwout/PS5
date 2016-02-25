@@ -64,11 +64,15 @@ void DesStatePublisher::initializePublishers() {
 bool DesStatePublisher::estopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response) {
     ROS_WARN("estop!!");
     e_stop_trigger_ = true;
+
+    return true;
 }
 
 bool DesStatePublisher::clearEstopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response) {
     ROS_INFO("estop reset");
     e_stop_reset_ = true;
+
+    return true;
 }
 
 bool DesStatePublisher::flushPathQueueCB(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response) {
@@ -77,14 +81,20 @@ bool DesStatePublisher::flushPathQueueCB(std_srvs::TriggerRequest& request, std_
     {
         path_queue_.pop();
     }
+
+    return true;
 }
 
 bool DesStatePublisher::appendPathQueueCB(mobot_pub_des_state::pathRequest& request, mobot_pub_des_state::pathResponse& response) {
 
-    int npts = request.path.poses.size();
+    long npts = request.path.poses.size();
     ROS_INFO("appending path queue with %d points", npts);
     for (int i = 0; i < npts; i++)
+    {
         path_queue_.push(request.path.poses[i]);
+    }
+
+    return true;
 }
 
 void DesStatePublisher::set_init_pose(double x, double y, double psi) {
@@ -187,7 +197,7 @@ void DesStatePublisher::pub_next_state() {
             //it to compute a new trajectory and change motion mode
 
             if (!path_queue_.empty()) {
-                int n_path_pts = path_queue_.size();
+                long n_path_pts = path_queue_.size();
                 ROS_INFO("%d points in path queue",n_path_pts);
                 start_pose_ = current_pose_;
                 end_pose_ = path_queue_.front();
