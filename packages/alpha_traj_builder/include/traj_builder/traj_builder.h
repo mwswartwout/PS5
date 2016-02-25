@@ -95,7 +95,7 @@ public:
     void build_point_and_go_traj(geometry_msgs::PoseStamped start_pose,
             geometry_msgs::PoseStamped end_pose,
             std::vector<nav_msgs::Odometry> &vec_of_states);
-    void build_braking_traj(geometry_msgs::PoseStamped start_pose,
+    void build_braking_traj(nav_msgs::Odometry start_state,
             std::vector<nav_msgs::Odometry> &vec_of_states);
 
 };

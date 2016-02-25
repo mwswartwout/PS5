@@ -405,7 +405,42 @@ void TrajBuilder::build_triangular_spin_traj(geometry_msgs::PoseStamped start_po
 //compute trajectory corresponding to applying max prudent decel to halt
 void TrajBuilder::build_braking_traj(geometry_msgs::PoseStamped start_pose,
         std::vector<nav_msgs::Odometry> &vec_of_states) {
-    //FINISH ME!
+        //Set up internal variables off the current state, and start_pose
+    double x_start = start_state.pose.pose.position.x;
+    double y_start = start_state.pose.pose.position.y;
+    double psi = convertPlanarQuat2Psi(start_state.pose.pose.orientation);
+    nav_msgs::Odometry des_state;
+    des_state.header = start_state.header; //really, want to copy the frame_id
+    des_state.pose.pose = start_state.pose.pose; //start from here
+    double des_speed = start_state.twist.twist.linear.x;
+    double x_des = x_start; //start from here
+    double y_des = y_start;
+    double t = 0.0;
+    while(des_speed>0){
+        t+=dt_;
+        //if needed accel< max accel, go to zero speed
+        if (des_speed<(accel_max_*dt_)){
+            double act_accel=des_speed/dt_;
+            x_des += (0.5 * act_accel * dt_ * dt_ * cos(psi));
+            y_des += (0.5 * act_accel * dt_ * dt_ * sin(psi));
+            des_state.pose.pose.position.x = x_des;
+            des_state.pose.pose.position.y = y_des;
+            des_speed=0;
+            des_state.twist.twist.linear.x = des_speed;
+            vec_of_states.push_back(des_state);
+            //Otherwise, take the speed down by the maximum allowed amount
+        }else{
+            x_des += (0.5 * accel_max_ * dt_ * dt_ * cos(psi));
+            y_des += (0.5 * accel_max_ * dt_ * dt_ * sin(psi));
+            des_state.pose.pose.position.x = x_des;
+            des_state.pose.pose.position.y = y_des;
+            des_speed -= accel_max_*dt_;
+            des_state.twist.twist.linear.x = des_speed;
+            vec_of_states.push_back(des_state);
+        }
+    }
+    des_state.twist.twist = halt_twist_; // On the off chance that speed did not end up at 0
+    vec_of_states.push_back(des_state); // send complete stop
 
 }
 
