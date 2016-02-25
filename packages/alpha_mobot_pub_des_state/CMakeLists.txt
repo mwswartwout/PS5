@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(alpha_mobot_pub_des_state)
 
+if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+
 find_package(catkin_simple REQUIRED)
 
 #uncomment next line to use OpenCV library
