@@ -71,6 +71,7 @@ private:
     ros::Publisher des_psi_publisher_;
 
     ros::Subscriber motor_subscriber;
+    ros::Subscriber lidar_subscriber;
 
     //a trajectory-builder object; 
     TrajBuilder trajBuilder_; 
@@ -80,6 +81,7 @@ private:
     void initializeServices();
     void initializeSubscribers();
     void motorCallback(std_msgs::Bool msg);
+    void lidarCallback(std_msgs::Bool alarm);
     bool estopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
     bool clearEstopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);
     bool flushPathQueueCB(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response);

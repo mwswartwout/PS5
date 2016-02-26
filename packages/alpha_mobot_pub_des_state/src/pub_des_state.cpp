@@ -69,6 +69,7 @@ void DesStatePublisher::initializePublishers() {
 void DesStatePublisher::initializeSubscribers() {
     ROS_INFO("Initializing Subscribers");
     motor_subscriber = nh_.subscribe("motors_enabled", 1, &DesStatePublisher::motorCallback, this);
+    lidar_subscriber = nh_.subscribe("lidar_alarm", 1, &DesStatePublisher::lidarCallback, this); //need to add alarm from somebody's code
 }
 
 void DesStatePublisher::motorCallback(std_msgs::Bool msg) {
@@ -93,6 +94,14 @@ void DesStatePublisher::motorCallback(std_msgs::Bool msg) {
     {
         ROS_INFO("Hardware e-stop deactivated but lidar_alarm still present");
         hardware_estop = false;
+    }
+}
+
+void DesStatePublisher::lidarCallback(std_msgs::Bool alarm) {
+    //lidar alam activated, set bool to trigger stop
+    if(alarm.data) {
+	ROS_INFO("Lidar alarm triggered");
+    	lidar_alarm = alarm.data;   
     }
 }
 
@@ -173,6 +182,14 @@ void DesStatePublisher::pub_next_state() {
         else {
             motion_mode_ = DONE_W_SUBGOAL; //this will pick up where left off
         }
+    }
+
+    if(lidar_alarm) {
+	lidar_alarm = false; //reset flag
+	//braking occurs in PURSUING_SUBGOAL state
+	trajBuilder_.build_braking_traj(current_pose_, des_state_vec_);
+        traj_pt_i_ = 0;
+        npts_traj_ = des_state_vec_.size();
     }
     
     //state machine; results in publishing a new desired state
