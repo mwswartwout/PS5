@@ -10,7 +10,7 @@ class LidarAlarm():
     
     # set what percentages of pings must be < than MIN_SAFE_DISTANCE
     # for our alarm to return a warning
-    ALARM_TRIP_PERCENTAGE = .5
+    ALARM_TRIP_PERCENTAGE = .2
 
     # Set what width (in pings) we want to scan for obstacles
     ALARM_SCAN_WIDTH = 90
@@ -74,9 +74,9 @@ class LidarAlarm():
                         averageDanger += laser_scan.ranges[x]
 
 
-        #rospy.loginfo("%d valid lidar pings with average distance %f", numPings, float(average) / float(numPings))
-        #if count is not 0:
-            #rospy.loginfo("%d dangerous pings with average distance %f", count, float(averageDanger) / float(count))
+        rospy.loginfo("%d valid lidar pings with average distance %f", numPings, float(average) / float(numPings))
+        if count is not 0:
+            rospy.loginfo("%d dangerous pings with average distance %f", count, float(averageDanger) / float(count))
 
         if count > (numPings * self.ALARM_TRIP_PERCENTAGE) :
             self.laser_alarm = True
