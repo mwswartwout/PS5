@@ -20,7 +20,6 @@ DesStatePublisher::DesStatePublisher(ros::NodeHandle& nh) : nh_(nh) {
     trajBuilder_.set_path_move_tol_(path_move_tol_);
     initializePublishers();
     initializeServices();
-    initializeSubscribers();
     //define a halt state; zero speed and spin, and fill with viable coords
     halt_twist_.linear.x = 0.0;
     halt_twist_.linear.y = 0.0;
@@ -31,8 +30,6 @@ DesStatePublisher::DesStatePublisher(ros::NodeHandle& nh) : nh_(nh) {
     motion_mode_ = DONE_W_SUBGOAL; //init in state ready to process new goal
     e_stop_trigger_ = false; //these are intended to enable e-stop via a service
     e_stop_reset_ = false; //and reset e-stop
-    hardware_estop = false; // Indicates the hardware e-stop is active
-    lidar_alarm = false;  // Indicates the lidar e-stop is active
     current_pose_ = trajBuilder_.xyPsi2PoseStamped(0,0,0);
     start_pose_ = current_pose_;
     end_pose_ = current_pose_;
@@ -53,9 +50,6 @@ void DesStatePublisher::initializeServices() {
             &DesStatePublisher::flushPathQueueCB, this);
     append_path_ = nh_.advertiseService("append_path_queue_service",
             &DesStatePublisher::appendPathQueueCB, this);
-
-    estop_client = nh_.serviceClient<std_srvs::Trigger>("estop_service");
-    estop_clear_client = nh_.serviceClient<std_srvs::Trigger>("clear_estop_service");
 }
 
 //member helper function to set up publishers;
@@ -64,36 +58,6 @@ void DesStatePublisher::initializePublishers() {
     ROS_INFO("Initializing Publishers");
     desired_state_publisher_ = nh_.advertise<nav_msgs::Odometry>("/desState", 1, true);
     des_psi_publisher_ = nh_.advertise<std_msgs::Float64>("/desPsi", 1);
-}
-
-void DesStatePublisher::initializeSubscribers() {
-    ROS_INFO("Initializing Subscribers");
-    motor_subscriber = nh_.subscribe("motors_enabled", 1, &DesStatePublisher::motorCallback, this);
-}
-
-void DesStatePublisher::motorCallback(std_msgs::Bool msg) {
-    // If a hardware e-stop is called, trigger the estop_server
-    if (!msg.data)
-    {
-        ROS_INFO("Hardware e-stop detected");
-        hardware_estop = true;
-        std_srvs::Trigger trigger;
-        estop_client.call(trigger);
-    }
-    // If no hardware e-stop is called, only reset the estop_server if there is also no lidar_alarm
-    else if (!lidar_alarm)
-    {
-        ROS_INFO("All clear, resetting e-stop");
-        hardware_estop = false;
-        std_srvs::Trigger trigger;
-        estop_clear_client.call(trigger);
-    }
-    // If there is a lidar_alarm, don't reset service, but indicate there is no longer a hardware e-stop
-    else
-    {
-        ROS_INFO("Hardware e-stop deactivated but lidar_alarm still present");
-        hardware_estop = false;
-    }
 }
 
 bool DesStatePublisher::estopServiceCallback(std_srvs::TriggerRequest& request, std_srvs::TriggerResponse& response) {
@@ -156,6 +120,7 @@ void DesStatePublisher::set_init_pose(double x, double y, double psi) {
 void DesStatePublisher::pub_next_state() {
     // first test if an e-stop has been triggered
     if (e_stop_trigger_) {
+        ROS_INFO("Detected an e-stop");
         e_stop_trigger_ = false; //reset trigger
         //compute a halt trajectory
         trajBuilder_.build_braking_traj(current_des_state_, des_state_vec_);
@@ -165,6 +130,7 @@ void DesStatePublisher::pub_next_state() {
     }
     //or if an e-stop has been cleared
     if (e_stop_reset_) {
+        ROS_INFO("E-Stop has been reset");
         e_stop_reset_ = false; //reset trigger
         if (motion_mode_ != E_STOPPED) {
             ROS_WARN("e-stop reset while not in e-stop mode");
