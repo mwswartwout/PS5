@@ -140,14 +140,6 @@ void DesStatePublisher::pub_next_state() {
             motion_mode_ = DONE_W_SUBGOAL; //this will pick up where left off
         }
     }
-
-    if(lidar_alarm) {
-	lidar_alarm = false; //reset flag
-	//braking occurs in PURSUING_SUBGOAL state
-	trajBuilder_.build_braking_traj(current_pose_, des_state_vec_);
-        traj_pt_i_ = 0;
-        npts_traj_ = des_state_vec_.size();
-    }
     
     //state machine; results in publishing a new desired state
     switch (motion_mode_) {

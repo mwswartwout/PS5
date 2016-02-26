@@ -9,11 +9,27 @@ ros::ServiceClient estop_clear_client;
 ros::Subscriber motor_subscriber;
 ros::Subscriber lidar_subscriber;
 
-void DesStatePublisher::lidarCallback(std_msgs::Bool alarm) {
+void lidarCallback(std_msgs::Bool alarm) {
     //lidar alam activated, set bool to trigger stop
     if(alarm.data) {
-    ROS_INFO("Lidar alarm triggered");
-        lidar_alarm = alarm.data;   
+        ROS_INFO("LIDAR e-stop detected");
+        lidar_alarm = true;
+        std_srvs::Trigger trigger;
+        estop_client.call(trigger);
+    }
+    // If no LIDAR e-stop is called, only reset the estop_server if there is also no hardware e-stop
+    else if (!hardware_estop)
+    {
+        ROS_INFO("All clear, resetting e-stop");
+        lidar_alarm = false;
+        std_srvs::Trigger trigger;
+        estop_clear_client.call(trigger);
+    }
+    // If there is a hardware e-stop, don't reset service, but indicate there is no longer a LIDAR alarm
+    else
+    {
+        ROS_INFO("LIDAR e-stop deactivated but hardware e-stop still present");
+        lidar_alarm = false;
     }
 }
 
@@ -49,7 +65,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle nh_;
 
 	motor_subscriber = nh_.subscribe("motors_enabled", 1, motorCallback);
-    lidar_subscriber = nh_.subscribe("lidar_alarm", 1, &DesStatePublisher::lidarCallback, this); //need to add alarm from somebody's code
+    lidar_subscriber = nh_.subscribe("lidar_alarm", 1, lidarCallback); //need to add alarm from somebody's code
 	estop_client = nh_.serviceClient<std_srvs::Trigger>("estop_service");
     estop_clear_client = nh_.serviceClient<std_srvs::Trigger>("clear_estop_service");
 
