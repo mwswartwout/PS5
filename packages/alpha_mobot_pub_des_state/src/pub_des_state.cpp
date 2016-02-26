@@ -120,7 +120,7 @@ bool DesStatePublisher::flushPathQueueCB(std_srvs::TriggerRequest& request, std_
     return true;
 }
 
-bool DesStatePublisher::appendPathQueueCB(mobot_pub_des_state::pathRequest& request, mobot_pub_des_state::pathResponse& response) {
+bool DesStatePublisher::appendPathQueueCB(alpha_mobot_pub_des_state::pathRequest& request, alpha_mobot_pub_des_state::pathResponse& response) {
 
     long npts = request.path.poses.size();
     ROS_INFO_STREAM("appending path queue with " << npts << " points");
@@ -158,7 +158,7 @@ void DesStatePublisher::pub_next_state() {
     if (e_stop_trigger_) {
         e_stop_trigger_ = false; //reset trigger
         //compute a halt trajectory
-        trajBuilder_.build_braking_traj(current_pose_, des_state_vec_);
+        trajBuilder_.build_braking_traj(current_des_state_, des_state_vec_);
         motion_mode_ = HALTING;
         traj_pt_i_ = 0;
         npts_traj_ = des_state_vec_.size();
