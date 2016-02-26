@@ -1,4 +1,6 @@
 <launch>
+	<include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+	!-- <include file="$(find mobot_urdf)/launch/mobot_w_lidar.launch"/>
 	<node name="alpha_open_loop_controller" pkg="alpha_mobot_pub_des_state" type="alpha_open_loop_controller" output="screen"/>
 	<node name="alpha_mobot_pub_des_state" pkg="alpha_mobot_pub_des_state" type="alpha_mobot_pub_des_state" output="screen"/>
 	<node name="alpha_pub_des_state_path_client" pkg="alpha_mobot_pub_des_state" type="alpha_pub_des_state_path_client" output="screen"/>

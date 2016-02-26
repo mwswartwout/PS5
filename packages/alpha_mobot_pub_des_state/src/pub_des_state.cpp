@@ -173,14 +173,17 @@ void DesStatePublisher::pub_next_state() {
 
         case PURSUING_SUBGOAL: //if have remaining pts in computed traj, send them
             //extract the i'th point of our plan:
+            ROS_INFO("Entered PURSUING_SUBGOAL case");
             current_des_state_ = des_state_vec_[traj_pt_i_];
             current_pose_.pose = current_des_state_.pose.pose;
             current_des_state_.header.stamp = ros::Time::now();
+            ROS_INFO("Publishing current_des_state_");
             desired_state_publisher_.publish(current_des_state_);
             //next three lines just for convenience--convert to heading and publish
             // for rqt_plot visualization            
             des_psi_ = trajBuilder_.convertPlanarQuat2Psi(current_pose_.pose.orientation);
             float_msg_.data = des_psi_;
+            ROS_INFO("Publishing des_psi_");
             des_psi_publisher_.publish(float_msg_); 
             traj_pt_i_++; // increment counter to prep for next point of plan
             //check if we have clocked out all of our planned states:
@@ -196,7 +199,7 @@ void DesStatePublisher::pub_next_state() {
         case DONE_W_SUBGOAL: //suspended, pending a new subgoal
             //see if there is another subgoal is in queue; if so, use
             //it to compute a new trajectory and change motion mode
-
+            ROS_INFO("DONE_W_SUBGOAL");
             if (!path_queue_.empty()) {
                 long n_path_pts = path_queue_.size();
                 ROS_INFO_STREAM(n_path_pts << "points in path queue");

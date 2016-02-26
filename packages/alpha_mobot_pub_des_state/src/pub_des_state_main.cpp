@@ -13,9 +13,14 @@ int main(int argc, char **argv) {
     
     // main loop; publish a desired state every iteration
     while (ros::ok()) {
+        ROS_INFO("Going to next state");
         desStatePublisher.pub_next_state();
+        ROS_INFO("Spinning");
         ros::spinOnce();
+        ROS_INFO("Sleeping");
         looprate.sleep(); //sleep for defined sample period, then do loop again
+        ROS_INFO("Done sleeping");
     }
+    ROS_INFO("ROS is not okay, exited loop");
 }
 

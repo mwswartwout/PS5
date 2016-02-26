@@ -13,10 +13,10 @@ ros::Subscriber lidar_subscriber;
 void lidarCallback(std_msgs::Bool alarm) {
     //lidar alam activated, set bool to trigger stop
     if(alarm.data) {
-        ROS_INFO("LIDAR e-stop detected");
         lidar_alarm = true;
         std_srvs::Trigger trigger;
         if (!estop) {
+            ROS_INFO("LIDAR e-stop detected");
             estop_client.call(trigger);
         }
         estop = true;
@@ -33,7 +33,7 @@ void lidarCallback(std_msgs::Bool alarm) {
     // If there is a hardware e-stop, don't reset service, but indicate there is no longer a LIDAR alarm
     else if (estop)
     {
-        ROS_INFO("LIDAR e-stop deactivated but hardware e-stop still present");
+        //ROS_INFO("LIDAR e-stop deactivated but hardware e-stop still present");
         lidar_alarm = false;
     }
 }
@@ -42,10 +42,10 @@ void motorCallback(std_msgs::Bool msg) {
     // If a hardware e-stop is called, trigger the estop_server
     if (!msg.data)
     {
-        ROS_INFO("Hardware e-stop detected");
         hardware_estop = true;
         std_srvs::Trigger trigger;
         if (!estop) {
+            ROS_INFO("Hardware e-stop detected");
             estop_client.call(trigger);
         }
         estop = true;
@@ -62,7 +62,7 @@ void motorCallback(std_msgs::Bool msg) {
     // If there is a lidar_alarm, don't reset service, but indicate there is no longer a hardware e-stop
     else if (estop)
     {
-        ROS_INFO("Hardware e-stop deactivated but lidar_alarm still present");
+        //ROS_INFO("Hardware e-stop deactivated but lidar_alarm still present");
         hardware_estop = false;
     }
 }
