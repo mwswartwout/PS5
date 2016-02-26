@@ -1,4 +1,4 @@
-#include<traj_builder/traj_builder.h>
+#include<alpha_traj_builder/alpha_traj_builder.h>
 
 //This library contains functions to build simple navigation trajectories.
 //The main function is: build_point_and_go_traj().  This function takes

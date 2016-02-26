@@ -2,7 +2,7 @@
 // illustrates how to send a request to the append_path_queue_service service
 
 #include <ros/ros.h>
-#include <mobot_pub_des_state/path.h>
+#include <alpha_mobot_pub_des_state/path.h>
 #include <iostream>
 #include <string>
 #include <nav_msgs/Path.h>
@@ -22,7 +22,7 @@ geometry_msgs::Quaternion convertPlanarPhi2Quaternion(double phi) {
 int main(int argc, char **argv) {
     ros::init(argc, argv, "append_path_client");
     ros::NodeHandle n;
-    ros::ServiceClient client = n.serviceClient<mobot_pub_des_state::path>("append_path_queue_service");
+    ros::ServiceClient client = n.serviceClient<alpha_mobot_pub_des_state::path>("append_path_queue_service");
     geometry_msgs::Quaternion quat;
     
     while (!client.exists()) {
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
       ros::Duration(1.0).sleep();
     }
     ROS_INFO("connected client to service");
-    mobot_pub_des_state::path path_srv;
+    alpha_mobot_pub_des_state::path path_srv;
     
     //create some path points...this should be done by some intelligent algorithm, but we'll hard-code it here
     geometry_msgs::PoseStamped pose_stamped;
