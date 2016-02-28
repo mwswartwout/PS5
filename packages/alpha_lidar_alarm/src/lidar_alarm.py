@@ -6,7 +6,7 @@ from std_msgs.msg import Float32, Bool
 
 class LidarAlarm():
     # set alarm if anything is within 0.5m of the front of robot
-    MIN_SAFE_DISTANCE = 2 
+    MIN_SAFE_DISTANCE = 1 
     
     # set what percentages of pings must be < than MIN_SAFE_DISTANCE
     # for our alarm to return a warning
@@ -97,7 +97,7 @@ def main():
     alarm = LidarAlarm()
 
     # create a Subscriber object and have it subscribe to the lidar topic
-    lidar_subscriber = rospy.Subscriber('scan', LaserScan, alarm.laserCallback)
+    lidar_subscriber = rospy.Subscriber('base_laser1_scan', LaserScan, alarm.laserCallback)
     rospy.spin()
     # this is essentially a "while(1)" statement, except it
     # forces refreshing wakeups upon new data arrival

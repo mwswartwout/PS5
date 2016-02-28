@@ -187,7 +187,9 @@ void DesStatePublisher::pub_next_state() {
             if (traj_pt_i_ >= npts_traj_) {
                 motion_mode_ = DONE_W_SUBGOAL; //if so, indicate we are done
                 seg_end_state_ = des_state_vec_.back(); // last state of traj
-                path_queue_.pop(); // done w/ this subgoal; remove from the queue 
+                if (!path_queue_.empty()) {
+                    path_queue_.pop();
+                }// done w/ this subgoal; remove from the queue 
                 ROS_INFO("reached a subgoal: x = %f, y= %f",current_pose_.pose.position.x,
                         current_pose_.pose.position.y);
             }
