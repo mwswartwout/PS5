@@ -14,6 +14,7 @@ cs_add_executable(alpha_mobot_pub_des_state src/pub_des_state_main.cpp src/pub_d
 cs_add_executable(alpha_open_loop_controller src/open_loop_controller.cpp)
 cs_add_executable(alpha_pub_des_state_path_client src/pub_des_state_path_client.cpp)
 cs_add_executable(alpha_pub_des_state_flush_path_client src/pub_des_state_flush_path_client.cpp)
+cs_add_executable(alpha_pub_des_state_path_replanning_client src/pub_des_state_path_replanning_client.cpp)
 cs_add_executable(estop src/estop.cpp)
 
 cs_install()
