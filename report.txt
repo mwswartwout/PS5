@@ -1,0 +1,6 @@
+We didn't do much for this assignment.
+The only two changes we made were to the navigation way points and the dynamic parameters.
+
+In pub_des_state_main.cpp we edited the navigation waypoints to add 3 points that guide Jinx from the elevator to the vending machine.
+
+In pub_des_state.h we edited the dynamic parameters to get the smoothest motions and turns that we could from Jinx.
