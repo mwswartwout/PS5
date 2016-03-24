@@ -6,11 +6,11 @@ from std_msgs.msg import Float32, Bool
 
 class LidarAlarm():
     # set alarm if anything is within 0.5m of the front of robot
-    MIN_SAFE_DISTANCE = 1 
+    MIN_SAFE_DISTANCE = .5
     
     # set what percentages of pings must be < than MIN_SAFE_DISTANCE
     # for our alarm to return a warning
-    ALARM_TRIP_PERCENTAGE = .1
+    ALARM_TRIP_PERCENTAGE = .3
 
     # Set what width (in pings) we want to scan for obstacles
     ALARM_SCAN_WIDTH = 90
